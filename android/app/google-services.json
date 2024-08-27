@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "402364422543",
+    "project_id": "task-one-think",
+    "storage_bucket": "task-one-think.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402364422543:android:585b6ed2f406d7e4bd93fa",
+        "android_client_info": {
+          "package_name": "com.example.task_one_think"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArhb2TBhg6TDlQdHLB89OETYYWyQthqGI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
