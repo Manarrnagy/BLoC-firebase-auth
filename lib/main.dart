@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:task_one_think/screens/home_screen.dart';
 import 'package:task_one_think/screens/login_screen.dart';
 import 'package:task_one_think/screens/sign_up_screen.dart';
+import 'package:task_one_think/screens/test_login.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: LoginScreen(),
+      home: LoginScreen(), ///check internet connection (SPLASH -> CHECK INTERNET (EITHER OFFLINE OR LOGIN) )
       routes: {
         'login':(context)=>LoginScreen(),
         'signup':(context)=>SignupScreen(),

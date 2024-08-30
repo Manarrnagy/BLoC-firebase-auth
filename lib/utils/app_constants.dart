@@ -9,6 +9,8 @@ class AppConstants{
     ],
     begin: Alignment.topCenter,
     end: Alignment.bottomLeft,
+
   );
+
 
 }

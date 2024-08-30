@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import"package:flutter/material.dart";
 
 
-abstract class AuthDataSource{
-  Future<void> signUp( String email,  String password, String confirmPassword);
-  Future<void> logIn( String email,  String password);
+abstract class AuthDataSource {
+  Future<void> signUp(String email, String password, String confirmPassword);
+
+  Future<void> logIn(String email, String password);
 }
 
 class AuthRepository implements AuthDataSource {
@@ -27,19 +29,23 @@ class AuthRepository implements AuthDataSource {
       catch (e) {
         throw Exception(e.toString());
       }
-    }else{
+    } else {
       ///display error message
     }
   }
 
 
-
   @override
   Future<void> logIn(String email, String password) async {
-
-    try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-    }on FirebaseException catch(e){
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email, password: password).then((value) =>
+      {if (value.user != null) {
+        print("###### USER IS NOT NULL ############################")
+      }
+    }
+    );
+    } on FirebaseException catch (e) {
       throw Exception(e.toString());
     }
   }

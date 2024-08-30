@@ -62,5 +62,19 @@ class AppComponents {
         ),
       );
 
-  static Widget spacer({required height}) => SizedBox();
+//static Widget spacer({required height}) => SizedBox();
+  static Widget loadingIndicator({required BuildContext context}) => Stack(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            color: Colors.grey.withOpacity(0.3),
+          ),
+          Center(
+            child: CircularProgressIndicator(
+              color: AppColors.darkPurple,
+            ),
+          )
+        ],
+      );
 }
