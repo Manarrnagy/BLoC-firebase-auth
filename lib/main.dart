@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:task_one_think/screens/home_screen.dart';
 import 'package:task_one_think/screens/login_screen.dart';
 import 'package:task_one_think/screens/sign_up_screen.dart';
-import 'package:task_one_think/screens/test_login.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
