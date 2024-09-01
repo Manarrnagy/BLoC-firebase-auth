@@ -28,3 +28,4 @@ class SignupError extends UserAuthInitial {
 
   SignupError(this.error);
 }
+

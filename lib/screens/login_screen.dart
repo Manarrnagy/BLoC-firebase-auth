@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_one_think/bloc/user_auth_cubit.dart';
-
+import 'package:task_one_think/bloc/auth_bloc.dart';
 import 'package:task_one_think/utils/app_components.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,8 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     ///---------------------------------Bloc------------------------------------
     return BlocProvider(
-      create: (context) => UserAuthCubit(),
-      child: BlocListener<UserAuthCubit, UserAuthState>(
+      create: (context) => AuthBloc(),
+      child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
             Navigator.pushReplacementNamed(context, "home");
@@ -35,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
         },
-        child: BlocBuilder<UserAuthCubit, UserAuthState>(
+        child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             return Container(
               ///to add image background to scaffold
@@ -100,9 +99,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             AppComponents.solidButton(
                                 fun: () {
                                   if (formKey.currentState!.validate()) {
-                                    context.read<UserAuthCubit>().login(
-                                        email: emailController.text.trim(),
-                                        pass: passwordController.text);
+                                    BlocProvider.of<AuthBloc>(context)
+                                        .add(LoginRequest(emailController.text,passwordController.text));
                                   }
                                 },
                                 widget: Text(
