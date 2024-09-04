@@ -18,6 +18,22 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  /// Try to figure out where and how should you use this code
+  // FirebaseAuth.instance.authStateChanges().listen(
+  // (user) async {
+  // if (user == null) {
+  // initialRoute = AppRoutes.initialRoute;
+  // isUserLogin = false;
+  // } else {
+  // initialRoute = AppRoutes.appNavigationScreen;
+  // isUserLogin = true;
+  // }
+  // },
+  // );
+  ///
+  /// initialRoute: initialRoute,
+  ///  routes: AppRoutes.routes,
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
