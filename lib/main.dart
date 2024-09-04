@@ -23,10 +23,8 @@ class MyApp extends StatelessWidget {
   // (user) async {
   // if (user == null) {
   // initialRoute = AppRoutes.initialRoute;
-  // isUserLogin = false;
   // } else {
   // initialRoute = AppRoutes.appNavigationScreen;
-  // isUserLogin = true;
   // }
   // },
   // );
