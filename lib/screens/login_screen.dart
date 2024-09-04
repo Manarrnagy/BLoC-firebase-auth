@@ -27,9 +27,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
+
             passwordController.text="";
             emailController.text="";
-            Navigator.pushNamed(context, "home");
+            Navigator.pushNamedAndRemoveUntil(context, "home",(Route route)=>false);
           } else if (state is LoginError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
