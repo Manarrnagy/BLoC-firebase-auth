@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_one_think/bloc/auth_bloc.dart';
+import 'package:task_one_think/bloc/auth_bloc/auth_bloc.dart';
 import 'package:task_one_think/utils/app_components.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,6 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   bool isLoading = false;
 
+
+
   @override
   Widget build(BuildContext context) {
     ///---------------------------------Bloc------------------------------------
@@ -25,7 +27,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-            Navigator.pushReplacementNamed(context, "home");
+            passwordController.text="";
+            emailController.text="";
+            Navigator.pushNamed(context, "home");
           } else if (state is LoginError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

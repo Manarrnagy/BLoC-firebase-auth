@@ -11,6 +11,7 @@ class AppConstants{
     end: Alignment.bottomLeft,
 
   );
+  static const String rootUrl = "https://dummyjson.com/";
 
 
 }
