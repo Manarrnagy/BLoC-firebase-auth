@@ -18,3 +18,15 @@ class LoginError extends AuthInitial {
   LoginError(this.error);
 }
 
+// logout states
+class LogoutLoading extends AuthInitial {}
+
+class LogoutSuccess extends AuthInitial {
+}
+
+class LogoutError extends AuthInitial {
+  final String error;
+
+  LogoutError(this.error);
+}
+

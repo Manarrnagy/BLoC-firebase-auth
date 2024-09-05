@@ -6,7 +6,11 @@ abstract class AuthEvent {}
 class LoginRequest extends AuthEvent{
   String email;
   String password;
- // bool login;
   LoginRequest( this.email, this.password);
 }
+
+class LogoutRequest extends AuthEvent{}
+
+class SignupRequest extends AuthEvent{}
+
 

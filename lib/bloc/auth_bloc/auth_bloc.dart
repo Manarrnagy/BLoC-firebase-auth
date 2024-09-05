@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,6 +23,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         });
       } on FirebaseException catch (e) {
         emit(LoginError(e.toString()));
+        ///show snack bar with error
+      }
+    });
+
+    on<LogoutRequest>((event,emit) async {
+      try {
+        emit(LogoutLoading());
+        ///show loading indicator
+        await FirebaseAuth.instance
+            .signOut()
+            .then((value) {
+            emit(LogoutSuccess());
+            ///navigate to Login Screen
+
+        });
+      } on FirebaseException catch (e) {
+        emit(LogoutError(e.toString()));
         ///show snack bar with error
       }
     });

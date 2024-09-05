@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,35 +13,11 @@ var initialRoute;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseAuth.instance.authStateChanges().listen(
-        (user) async {
-      if (user == null) {
-         initialRoute = LoginScreen();
-      } else {
-        initialRoute = HomeScreen();
-      }
-    },
-  );
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  /// Try to figure out where and how should you use this code
-  // FirebaseAuth.instance.authStateChanges().listen(
-  // (user) async {
-  // if (user == null) {
-  // initialRoute = AppRoutes.initialRoute;
-  // } else {
-  // initialRoute = AppRoutes.appNavigationScreen;
-  // }
-  // },
-  // );
-  ///
-  /// initialRoute: initialRoute,
-  ///  routes: AppRoutes.routes,
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -56,7 +32,7 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: SplashScreen(initialRoute: initialRoute,),
+        home: SplashScreen(),
 
         ///check internet connection (SPLASH -> CHECK INTERNET (EITHER OFFLINE OR LOGIN) )
         routes: {
