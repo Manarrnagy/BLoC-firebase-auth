@@ -17,7 +17,12 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   bool isLoading = false;
 
-
+  @override
+  void dispose() {
+    passwordController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
-
-            passwordController.text="";
-            emailController.text="";
             Navigator.pushNamedAndRemoveUntil(context, "home",(Route route)=>false);
           } else if (state is LoginError) {
             ScaffoldMessenger.of(context).showSnackBar(

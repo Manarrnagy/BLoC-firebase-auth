@@ -1,9 +1,9 @@
-import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
+import "package:task_one_think/bloc/auth_bloc/auth_bloc.dart";
 import "package:task_one_think/bloc/dummy_user_bloc/dummy_user_bloc.dart";
+import "package:task_one_think/utils/app_components.dart";
 
-import "../data/firestore_service.dart";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,44 +21,64 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: InkWell(
-          child: Icon(
-            Icons.logout,
-          ),
-          onTap: () async {
-            await FirebaseAuth.instance.signOut().then(
-                  (value) => Navigator.pushReplacementNamed(context, "login"),
-                );
+    return BlocProvider(
+      create: (context) => AuthBloc(),
+      child: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is LogoutSuccess) {
+            Navigator.pushReplacementNamed(context, "login");
+          }else if(state is LogoutError){
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error.toString()),
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if(state is LogoutLoading){
+              return AppComponents.loadingIndicator(context: context);
+            }
+            return Scaffold(
+              appBar: AppBar(
+                leading: InkWell(
+                  child: Icon(
+                    Icons.logout,
+                  ),
+                  onTap: () async {
+                   BlocProvider.of<AuthBloc>(context).add(LogoutRequest());
+                  },
+                ),
+              ),
+              body:
+              BlocBuilder<DummyUserBloc, DummyUserState>(
+                  builder: (context, state) {
+                    if (state is DummyUserLoaded) {
+                      final users = state.users;
+                      return ListView.builder(
+                          itemCount: users.length,
+                          itemBuilder: (context, i) {
+                            return ListTile(
+                              leading: Container(
+                                child: Image.network(users[i].image),
+                                width: 50,
+                                height: 50,
+                              ),
+                              title: Text(
+                                "${users[i].firstname} ${users[i].lastname}",
+                              ),
+                            );
+                          },);
+                    } else if (state is DummyUserError) {
+                      return Center(child: Text(state.errorMessage));
+                    } else
+                      return AppComponents.loadingIndicator(context: context);
+                  }),
+            );
           },
         ),
       ),
-      body:
-          BlocBuilder<DummyUserBloc, DummyUserState>(builder: (context, state) {
-        if (state is DummyUserLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is DummyUserLoaded) {
-          final users = state.users;
-          return ListView.builder(
-              itemCount: users.length,
-              itemBuilder: (context, i) {
-                return ListTile(
-                  leading: Container(
-                    child: Image.network(users[i].image),
-                    width: 50,
-                    height: 50,
-                  ),
-                  title: Text(
-                    "${users[i].firstname} ${users[i].lastname}",
-                  ),
-                );
-              });
-        } else if (state is DummyUserError) {
-          return Center(child: Text(state.errorMessage));
-        } else
-          return Container();
-      }),
     );
   }
 }
