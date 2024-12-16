@@ -30,3 +30,14 @@ class LogoutError extends AuthInitial {
   LogoutError(this.error);
 }
 
+class SignupLoading extends AuthInitial {}
+
+class SignupSuccess extends AuthInitial {
+}
+
+class SignupError extends AuthInitial {
+  final String error;
+
+  SignupError(this.error);
+}
+

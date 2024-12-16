@@ -19,13 +19,13 @@ class LoginError extends UserAuthInitial {
 
 // signup states
 
-class SignupLoading extends UserAuthInitial {}
-
-class SignupSuccess extends UserAuthInitial {}
-
-class SignupError extends UserAuthInitial {
-  final String error;
-
-  SignupError(this.error);
-}
+// class SignupLoading extends UserAuthInitial {}
+//
+// class SignupSuccess extends UserAuthInitial {}
+//
+// class SignupError extends UserAuthInitial {
+//   final String error;
+//
+//   SignupError(this.error);
+// }
 
