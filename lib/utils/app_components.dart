@@ -48,15 +48,16 @@ class AppComponents {
           required Widget widget,
           required BuildContext context,
           double? widthPercent,
+          double? heightPercent,
           Color? color}) =>
       InkWell(
         onTap: fun,
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.08,
-          width: MediaQuery.of(context).size.width * 0.6,
+          height: heightPercent != null?MediaQuery.of(context).size.height *heightPercent:MediaQuery.of(context).size.height * 0.08,
+          width: widthPercent != null ? MediaQuery.of(context).size.width * widthPercent: MediaQuery.of(context).size.width * 0.6,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-              color: AppColors.darkPurple,
+              color: color??AppColors.darkPurple,
               borderRadius: BorderRadius.all(Radius.circular(30))),
           child: widget,
         ),
