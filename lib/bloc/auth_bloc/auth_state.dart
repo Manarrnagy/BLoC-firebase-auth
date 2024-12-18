@@ -10,6 +10,7 @@ class AuthInitial extends AuthState {}
 class LoginLoading extends AuthInitial {}
 
 class LoginSuccess extends AuthInitial {
+
 }
 
 class LoginError extends AuthInitial {
@@ -22,6 +23,7 @@ class LoginError extends AuthInitial {
 class LogoutLoading extends AuthInitial {}
 
 class LogoutSuccess extends AuthInitial {
+
 }
 
 class LogoutError extends AuthInitial {
@@ -33,6 +35,7 @@ class LogoutError extends AuthInitial {
 class SignupLoading extends AuthInitial {}
 
 class SignupSuccess extends AuthInitial {
+
 }
 
 class SignupError extends AuthInitial {

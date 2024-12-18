@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/firestore_service.dart';
 import '../../data/user_model.dart';
@@ -20,8 +21,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         await FirebaseAuth.instance
             .signInWithEmailAndPassword(
                 email: event.email, password: event.password)
-            .then((value) {
+            .then((value) async {
           if (value.user != null) {
+            SharedPreferences pref = await SharedPreferences.getInstance();
+            pref.setString("userID",value.user!.uid);
             emit(LoginSuccess());
 
             ///navigate to home
@@ -39,7 +42,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(LogoutLoading());
 
         ///show loading indicator
-        await FirebaseAuth.instance.signOut().then((value) {
+        await FirebaseAuth.instance.signOut().then((value) async {
+          SharedPreferences pref = await SharedPreferences.getInstance();
+          pref.remove("userID");
           emit(LogoutSuccess());
 
           ///navigate to Login Screen
@@ -75,7 +80,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
             await FirestoreService().addUserWithId(newUser);
             emit(SignupSuccess());
-
+            SharedPreferences pref = await SharedPreferences.getInstance();
+            pref.setString("userID",userCredential.user!.uid);
             ///navigate to home
           }
         } on FirebaseException catch (e) {

@@ -8,31 +8,23 @@ import 'package:task_one_think/screens/home_screen.dart';
 import 'package:task_one_think/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
+  String userID;
 
-  SplashScreen({super.key});
+  SplashScreen({super.key, required this.userID});
+
+  //SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   FirebaseAuth.instance.authStateChanges().listen(
-  //         (user) async {
-  //           this.user = user;
-  //           print(user);
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return FlutterSplashScreen(
       useImmersiveMode: true,
       duration: const Duration(milliseconds: 4500),
-      nextScreen:FirebaseAuth.instance.currentUser == null ? LoginScreen():HomeScreen(),
+      nextScreen: widget.userID == "" ? LoginScreen() : HomeScreen(),
       backgroundColor: Colors.white,
       splashScreenBody: Center(
         child: Lottie.asset(

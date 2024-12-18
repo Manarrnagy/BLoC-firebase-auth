@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_one_think/bloc/auth_bloc/auth_bloc.dart';
 import 'package:task_one_think/utils/app_colors.dart';
 import 'package:task_one_think/utils/app_components.dart';
@@ -31,8 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocProvider(
       create: (context) => AuthBloc(),
       child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async{
           if (state is LoginSuccess) {
+
             Navigator.pushNamedAndRemoveUntil(context, "home",(Route route)=>false);
           } else if (state is LoginError) {
             ScaffoldMessenger.of(context).showSnackBar(
