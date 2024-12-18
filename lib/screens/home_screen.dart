@@ -1,9 +1,11 @@
+import "package:firebase_auth/firebase_auth.dart";
+import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
-import "package:task_one_think/bloc/auth_bloc/auth_bloc.dart";
 import "package:task_one_think/bloc/dummy_user_bloc/dummy_user_bloc.dart";
 import "package:task_one_think/utils/app_components.dart";
-
+import "../bloc/auth_bloc/auth_bloc.dart";
+import "../bloc/user_bloc/user_bloc.dart";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,12 +16,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
-  void initState() {
-    BlocProvider.of<DummyUserBloc>(context).add(LoadUsers());
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthBloc(),
@@ -27,54 +23,71 @@ class _HomeScreenState extends State<HomeScreen> {
         listener: (context, state) {
           if (state is LogoutSuccess) {
             Navigator.pushReplacementNamed(context, "login");
-          }else if(state is LogoutError){
+          }
+          if (state is LogoutError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.error.toString()),
+                content: Text(
+                  state.error.toString(),
+                ),
               ),
             );
           }
         },
         child: BlocBuilder<AuthBloc, AuthState>(
+
           builder: (context, state) {
-            if(state is LogoutLoading){
-              return AppComponents.loadingIndicator(context: context);
-            }
             return Scaffold(
-              appBar: AppBar(
-                leading: InkWell(
-                  child: Icon(
-                    Icons.logout,
-                  ),
-                  onTap: () async {
-                   BlocProvider.of<AuthBloc>(context).add(LogoutRequest());
-                  },
+              appBar: AppBar(),
+              drawer: Drawer(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if(state is LogoutLoading)
+                       CircularProgressIndicator(),
+
+                    ListTile(
+                      minVerticalPadding: 50,
+                      tileColor: Colors.blue,
+                      leading: Icon(CupertinoIcons.profile_circled, size: 30,),
+                      title: Text(
+                        "My Profile", style: TextStyle(fontSize: 30),),
+                      onTap: () {
+                        Navigator.pushNamed(context, "profile");
+                      },
+                    ),
+                    InkWell(
+                      child: Icon(
+                        Icons.logout,
+                        size: 50,
+                      ),
+                      onTap: () async {
+                        BlocProvider.of<AuthBloc>(context).add(LogoutRequest());
+                      },
+                    ),
+                    // AppComponents.solidButton(
+                    //     fun: () {}, widget: widget, context: context)
+                  ],
                 ),
               ),
-              body:
-              BlocBuilder<DummyUserBloc, DummyUserState>(
-                  builder: (context, state) {
-                    if (state is DummyUserLoaded) {
-                      final users = state.users;
-                      return ListView.builder(
-                          itemCount: users.length,
-                          itemBuilder: (context, i) {
-                            return ListTile(
-                              leading: Container(
-                                child: Image.network(users[i].image),
-                                width: 50,
-                                height: 50,
-                              ),
-                              title: Text(
-                                "${users[i].firstname} ${users[i].lastname}",
-                              ),
-                            );
-                          },);
-                    } else if (state is DummyUserError) {
-                      return Center(child: Text(state.errorMessage));
-                    } else
-                      return AppComponents.loadingIndicator(context: context);
-                  }),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Welcome to \nhome screen",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
+                      )),
+
+                ],
+              ),
             );
           },
         ),

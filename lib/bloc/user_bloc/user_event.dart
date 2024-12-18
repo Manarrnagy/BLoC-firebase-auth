@@ -9,3 +9,8 @@ class LoadUserData extends UserEvent{
 
 
 }
+class UploadUserImage extends UserEvent{
+  String imageName;
+  String userId;
+  UploadUserImage(this.userId,this.imageName);
+}

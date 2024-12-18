@@ -3,8 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:task_one_think/screens/home_screen.dart';
 import 'package:task_one_think/screens/login_screen.dart';
+import 'package:task_one_think/screens/profile_screen.dart';
 import 'package:task_one_think/screens/sign_up_screen.dart';
-import 'data/firestore_service.dart';
+import 'package:task_one_think/screens/splash_screen.dart';
 
 var initialRoute;
 void main() async {
@@ -23,15 +24,16 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:SignupScreen(),
+      home:SplashScreen(),
+      debugShowCheckedModeBanner: false,
 
-      //SplashScreen(),
 
       ///check internet connection (SPLASH -> CHECK INTERNET (EITHER OFFLINE OR LOGIN) )
       routes: {
         'login': (context) => LoginScreen(),
         'signup': (context) => SignupScreen(),
         'home': (context) => HomeScreen(),
+        'profile': (context) => ProfileScreen(),
       },
     );
   }

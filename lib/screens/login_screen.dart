@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_one_think/bloc/auth_bloc/auth_bloc.dart';
+import 'package:task_one_think/utils/app_colors.dart';
 import 'package:task_one_think/utils/app_components.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -57,9 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Scaffold(
                 backgroundColor: Colors.transparent,
                 body: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height*0.15,
+                    ),
                     Text(
                       "Hello!",
                       style: TextStyle(
@@ -115,6 +119,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 20),
                                 ),
+                                context: context),
+                            SizedBox(
+                              height:MediaQuery.of(context).size.height*0.05 ,
+                            ),
+                            AppComponents.solidButton(
+                                fun: () {
+                                 Navigator.of(context).pushReplacementNamed("signup");
+                                },
+                                widget: Text(
+                                  "Don't have an account? SIGN UP",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                ),
+                                color: AppColors.yellow,
+                                heightPercent:0.05 ,
+                                widthPercent: 0.8,
                                 context: context),
                           ],
                         ),

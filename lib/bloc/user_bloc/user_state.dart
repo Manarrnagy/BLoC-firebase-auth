@@ -7,15 +7,24 @@ enum Submission {
   initial
 }
 
+enum ImageUpload {
+  loading,
+  success,
+  error,
+  initial
+}
+
 class UserState extends Equatable{
   final MyUser? userData;
   final String error;
   final Submission submission;
+  final ImageUpload imageUpload;
 
   const UserState({
     this.userData,
     this.error ="",
     this.submission =Submission.initial,
+    this.imageUpload =ImageUpload.initial,
 });
 
 
@@ -23,11 +32,13 @@ class UserState extends Equatable{
     MyUser? userData,
     String? error,
     Submission? submission,
+    ImageUpload? imageUpload
 }){
     return UserState(
     error: error ??this.error,
     userData: userData ?? this.userData,
       submission: submission ?? this.submission,
+      imageUpload: imageUpload ?? this.imageUpload,
     );
 }
 
