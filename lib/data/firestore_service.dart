@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:task_one_think/data/user_model.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class FirestoreService {
   final CollectionReference _usersCollection =
@@ -44,18 +48,27 @@ class FirestoreService {
         .catchError((error) => print('Add failed: $error'));
 
   }
+
+  // Future<String> addProfileImage (String imageName) async{
+  //   final ref = firebase_storage.FirebaseStorage.instance.ref().child(imageName);
+  //   final imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+  //
+  //   final uploadTask = ref.putFile(imageFile as File);
+  //   final snapshot = await uploadTask.whenComplete(() => null);
+  //   imageUrl = await snapshot.ref.getDownloadURL();
+  // }
   //
   // Future<void> deleteTodo(String userId) {
   //   return _usersCollection.doc(userId).delete();
   // }
+  Future<void> uploadUserImage(MyUser user, String ImageUrl) {
+    return _usersCollection.doc(user.id).update({
+      'image': ImageUrl,
+    });
 
+  }
 
 //update user
-// return _usersCollection.doc(user.id).update({
-//   'firstname': user.firstname,
-//   'lastname': user.lastname,
-//   'email': user.email,
-//   'image': user.image,
-//});
+
 
 }
