@@ -14,12 +14,11 @@ class LogoutRequest extends AuthEvent{}
 
 class SignupRequest extends AuthEvent{
   String image;
-  String firstname;
-  String lastname;
+  String username;
   String email;
   String password;
 
-  SignupRequest( this.image, this.firstname,this.lastname, this.email, this.password);
+  SignupRequest( this.image, this.username,this.email, this.password);
 }
 
 

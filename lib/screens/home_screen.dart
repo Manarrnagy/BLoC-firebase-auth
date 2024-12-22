@@ -1,11 +1,7 @@
-import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
-import "package:task_one_think/bloc/dummy_user_bloc/dummy_user_bloc.dart";
-import "package:task_one_think/utils/app_components.dart";
 import "../bloc/auth_bloc/auth_bloc.dart";
-import "../bloc/user_bloc/user_bloc.dart";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -35,7 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         child: BlocBuilder<AuthBloc, AuthState>(
-
           builder: (context, state) {
             return Scaffold(
               appBar: AppBar(),
@@ -43,15 +38,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if(state is LogoutLoading)
-                       CircularProgressIndicator(),
+                    if (state is LogoutLoading) CircularProgressIndicator(),
 
                     ListTile(
                       minVerticalPadding: 50,
                       tileColor: Colors.blue,
-                      leading: Icon(CupertinoIcons.profile_circled, size: 30,),
+                      leading: Icon(
+                        CupertinoIcons.profile_circled,
+                        size: 30,
+                      ),
                       title: Text(
-                        "My Profile", style: TextStyle(fontSize: 30),),
+                        "My Profile",
+                        style: TextStyle(fontSize: 30),
+                      ),
                       onTap: () {
                         Navigator.pushNamed(context, "profile");
                       },
@@ -74,10 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
+                      width: MediaQuery.of(context).size.width,
                       alignment: Alignment.center,
                       child: Text(
                         "Welcome to \nhome screen",
@@ -85,7 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       )),
-
                 ],
               ),
             );

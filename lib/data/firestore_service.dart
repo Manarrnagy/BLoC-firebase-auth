@@ -9,21 +9,26 @@ class FirestoreService {
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('my_users');
 
-  // Stream<List<DummyUser>> getUsers() {
+  // Stream<List<MyUser>> getUsers() {
   //   return _usersCollection.snapshots().map((snapshot) {
   //     return snapshot.docs.map((doc) {
   //       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-  //       return DummyUser(
+  //       return MyUser(
   //           id: doc.id,
-  //           firstname: data['firstname'],
-  //           lastname: data['lastname'],
+  //           username: data['username'],
   //           email: data['email'],
   //           image: data['image']);
   //     }).toList();
   //   });
   // }
   //
-  // Future<void> addUser(MyUser user) {
+
+
+  Future<DocumentSnapshot> getUsers(String userId) async {
+    DocumentSnapshot userDetails = await _usersCollection.doc(userId).get();
+    return userDetails;
+  }
+  // }Future<void> addUser(MyUser user) {
   //   return _usersCollection.add({
   //     'firstname': user.firstname,
   //     'lastname': user.lastname,
@@ -41,12 +46,11 @@ class FirestoreService {
 
     return _usersCollection
         .doc(user.id.toString()) // <-- Document ID
-        .set({'firstname': user.firstName, 'lastname': user.lastName,
+        .set({'username': user.username,
         'email': user.email,
         'image': user.image,}) // <-- Your data
         .then((_) => print('Added'))
         .catchError((error) => print('Add failed: $error'));
-
   }
 
   // Future<String> addProfileImage (String imageName) async{
@@ -65,10 +69,31 @@ class FirestoreService {
     return _usersCollection.doc(user.id).update({
       'image': ImageUrl,
     });
-
   }
 
-//update user
 
-
+  Future<void> updateFirebaseData(String userID,String datakey, String data) {
+    return _usersCollection.doc(userID).update({
+      datakey: data,
+    });
+  }
 }
+
+// FutureBuilder<DocumentSnapshot>(
+//   future: users.doc(event.userId).get(),
+//   builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot)  {
+//     if (snapshot.hasError) {
+//       emit(GetUserDataError("Something went wrong"));
+//     }
+//     if (snapshot.hasData && !snapshot.data!.exists) {
+//       emit(GetUserDataError("Document does not exist"));
+//     }
+//
+//     if (snapshot.connectionState == ConnectionState.done) {
+//       Map<String, dynamic> data =
+//           snapshot.data!.data() as Map<String, dynamic>;
+//       return Text("Hello, ${data['userName']}");
+//     }
+//   },
+// );
+// await users.get().then((value) => value.docs.);

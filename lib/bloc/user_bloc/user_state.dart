@@ -4,7 +4,8 @@ enum Submission {
   loading,
   success,
   error,
-  initial
+  initial,
+  dataUpdated
 }
 
 enum ImageUpload {
@@ -13,6 +14,7 @@ enum ImageUpload {
   error,
   initial
 }
+
 
 class UserState extends Equatable{
   final MyUser? userData;
@@ -43,7 +45,7 @@ class UserState extends Equatable{
 }
 
   @override
-  List<Object?> get props => [userData,error,submission];
+  List<Object?> get props => [userData,error,submission,imageUpload];
 
 
 

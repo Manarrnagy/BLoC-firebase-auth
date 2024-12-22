@@ -1,17 +1,26 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_one_think/utils/app_colors.dart';
-class AppConstants{
-  final APP_GRADIENT = LinearGradient(
-    colors: [
-      AppColors.pink.withAlpha(80),
-      Colors.white.withAlpha(2),
-      AppColors.orange.withAlpha(80)
-    ],
-    begin: Alignment.topCenter,
-    end: Alignment.bottomLeft,
-
-  );
-  static const String rootUrl = "https://dummyjson.com/";
-
+class AppConstants {
+  // final APP_GRADIENT = LinearGradient(
+  //   colors: [
+  //     AppColors.pink.withAlpha(80),
+  //     Colors.white.withAlpha(2),
+  //     AppColors.orange.withAlpha(80)
+  //   ],
+  //   begin: Alignment.topCenter,
+  //   end: Alignment.bottomLeft,
+  //
+  // );
+  //static const String rootUrl = "https://dummyjson.com/";
+  //
+  //  late SharedPreferences prefs;
+  // // Future <SharedPreferences> prefs =  SharedPreferences.getInstance();
+  //  static Future<AppConstants> createInstance() async {
+  //     return AppConstants(prefs: await SharedPreferences.getInstance());
+  //  }
 
 }

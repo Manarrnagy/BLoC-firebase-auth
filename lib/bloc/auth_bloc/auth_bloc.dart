@@ -73,15 +73,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (userCredential.user != null) {
             MyUser newUser = MyUser(
                 id: userCredential.user!.uid.toString(),
-                firstName: event.firstname,
-                lastName: event.lastname,
+                username: event.username,
                 email: event.email,
                 image: "");
 
             await FirestoreService().addUserWithId(newUser);
-            emit(SignupSuccess());
             SharedPreferences pref = await SharedPreferences.getInstance();
-            pref.setString("userID",userCredential.user!.uid);
+            pref.setString("userID",userCredential.user?.uid??"");
+            emit(SignupSuccess());
             ///navigate to home
           }
         } on FirebaseException catch (e) {

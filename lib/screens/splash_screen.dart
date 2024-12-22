@@ -1,16 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
-import 'package:flutter/widgets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:task_one_think/screens/home_screen.dart';
 import 'package:task_one_think/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
-  String userID;
+  final String userID;
 
-  SplashScreen({super.key, required this.userID});
+  const SplashScreen({super.key, required this.userID});
 
   //SplashScreen({super.key});
 
@@ -23,8 +20,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return FlutterSplashScreen(
       useImmersiveMode: true,
-      duration: const Duration(milliseconds: 4500),
-      nextScreen: widget.userID == "" ? LoginScreen() : HomeScreen(),
+      duration: const Duration(milliseconds: 3000),
+      nextScreen: (widget.userID.isEmpty) ? const LoginScreen() : const HomeScreen(),
       backgroundColor: Colors.white,
       splashScreenBody: Center(
         child: Lottie.asset(

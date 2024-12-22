@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
+import 'package:task_one_think/data/firestore_service.dart';
+
 
 import '../../data/user_model.dart';
 
@@ -19,36 +21,35 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc() : super(const UserState()) {
     on<LoadUserData>(_onLoadUser);
     on<UploadUserImage>(_onImageUpload);
+    on<UpdateUserData>(_onUpdateUserData);
   }
+  //
+  // _onLoadUser(LoadUserData event, Emitter<UserState> emit) async {
+  //   try {
+  //     emit(state.copyWith(submission: Submission.loading));
+  //     DocumentSnapshot userDetails = await FirebaseFirestore.instance
+  //         .collection('my_users')
+  //         .doc(event.userId)
+  //         .get();
+  //     if (userDetails.data() != null) {
+  //       MyUser user = MyUser.fromJson(
+  //           userDetails.data() as Map<String, dynamic>, userDetails.id);
+  //       emit(state.copyWith(submission: Submission.success, userData: user));
+  //     } else {
+  //       emit(state.copyWith(
+  //           submission: Submission.error, error: "User Not Found"));
+  //     }
+  //   } on FirebaseException catch (e) {
+  //     emit(state.copyWith(submission: Submission.error, error: e.toString()));
+  //
+  //     ///show snack bar with error
+  //   }
+  // }
 
   _onLoadUser(LoadUserData event, Emitter<UserState> emit) async {
     try {
       emit(state.copyWith(submission: Submission.loading));
-      CollectionReference users =
-      FirebaseFirestore.instance.collection('my_users');
-      // FutureBuilder<DocumentSnapshot>(
-      //   future: users.doc(event.userId).get(),
-      //   builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot)  {
-      //     if (snapshot.hasError) {
-      //       emit(GetUserDataError("Something went wrong"));
-      //     }
-      //     if (snapshot.hasData && !snapshot.data!.exists) {
-      //       emit(GetUserDataError("Document does not exist"));
-      //     }
-      //
-      //     if (snapshot.connectionState == ConnectionState.done) {
-      //       Map<String, dynamic> data =
-      //           snapshot.data!.data() as Map<String, dynamic>;
-      //       return Text("Hello, ${data['userName']}");
-      //     }
-      //   },
-      // );
-      // await users.get().then((value) => value.docs.);
-
-      DocumentSnapshot userDetails = await FirebaseFirestore.instance
-          .collection('my_users')
-          .doc(event.userId)
-          .get();
+      var userDetails = await FirestoreService().getUsers(event.userId);
       if (userDetails.data() != null) {
         MyUser user = MyUser.fromJson(
             userDetails.data() as Map<String, dynamic>, userDetails.id);
@@ -57,27 +58,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(state.copyWith(
             submission: Submission.error, error: "User Not Found"));
       }
-      // emit((GetUserDataSuccess()));
-      //
-      // ///show loading indicator
-      // ///load user data
-      // await FirebaseAuth.instance
-      //     .signInWithEmailAndPassword(
-      //     email: event.email, password: event.password)
-      //     .then((value) {
-      //   if (value.user != null) {
-      //     emit(LoginSuccess());
-      //
-      //     ///navigate to home
-      //   }
-      // });
     } on FirebaseException catch (e) {
       emit(state.copyWith(submission: Submission.error, error: e.toString()));
 
       ///show snack bar with error
     }
   }
-  _onImageUpload(UploadUserImage event, Emitter<UserState> emit)async{
+
+  _onImageUpload(UploadUserImage event, Emitter<UserState> emit) async {
     // try{
     //   emit(state.copyWith(imageUpload: ImageUpload.loading));
     //   final ref = firebase_storage.FirebaseStorage.instance.ref().child(event.userId);
@@ -101,69 +89,82 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     File? _photo;
     final ImagePicker _picker = ImagePicker();
 
-    try{
-      emit(state.copyWith(imageUpload: ImageUpload.loading));
+    try {
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      emit(state.copyWith(imageUpload: ImageUpload.loading));
       if (pickedFile != null) {
         _photo = File(pickedFile.path);
         final fileName = basename(event.userId);
         final destination = 'profile/$fileName.jpg';
-        final ref = firebase_storage.FirebaseStorage.instance
-            .ref().child(destination);
-          TaskSnapshot uploadTask = await ref.putFile(_photo);
-          var imageUrl = await uploadTask.ref.getDownloadURL();
-          FirebaseFirestore.instance.collection('my_users').doc(event.userId).update({'image': imageUrl,});
+        final ref =
+            firebase_storage.FirebaseStorage.instance.ref().child(destination);
+        TaskSnapshot uploadTask = await ref.putFile(_photo);
+        var imageUrl = await uploadTask.ref.getDownloadURL();
+        FirebaseFirestore.instance
+            .collection('my_users')
+            .doc(event.userId)
+            .update({
+          'image': imageUrl,
+        });
         emit(state.copyWith(imageUpload: ImageUpload.success));
         add(LoadUserData(event.userId));
+      } else {
+        emit(state.copyWith(imageUpload: ImageUpload.initial));
       }
-    }
-    on FirebaseException catch (e) {
+    } on FirebaseException catch (e) {
       emit(state.copyWith(imageUpload: ImageUpload.error, error: e.toString()));
+
       ///show snack bar with error
     }
   }
-
-
-  // _onLoadImage(LoadUserImage event, Emitter<UserState> emit)async{
-  //   try{
-  //     emit(state.copyWith(imageUpload: ImageUpload.loading));
-  //     CollectionReference users =
-  //     FirebaseFirestore.instance.collection('my_users');
-  //     // FutureBuilder<DocumentSnapshot>(
-  //     //   future: users.doc(event.userId).get(),
-  //     //   builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot)  {
-  //     //     if (snapshot.hasError) {
-  //     //       emit(GetUserDataError("Something went wrong"));
-  //     //     }
-  //     //     if (snapshot.hasData && !snapshot.data!.exists) {
-  //     //       emit(GetUserDataError("Document does not exist"));
-  //     //     }
-  //     //
-  //     //     if (snapshot.connectionState == ConnectionState.done) {
-  //     //       Map<String, dynamic> data =
-  //     //           snapshot.data!.data() as Map<String, dynamic>;
-  //     //       return Text("Hello, ${data['userName']}");
-  //     //     }
-  //     //   },
-  //     // );
-  //     // await users.get().then((value) => value.docs.);
-  //
-  //     DocumentSnapshot userDetails = await FirebaseFirestore.instance
-  //         .collection('my_users')
-  //         .doc(event.userId)
-  //         .get();
-  //     if (userDetails.data() != null) {
-  //       MyUser user = MyUser.fromJson(
-  //           userDetails.data() as Map<String, dynamic>, userDetails.id);
-  //       emit(state.copyWith(submission: Submission.success, userData: user));
-  //     } else {
-  //       emit(state.copyWith(
-  //           submission: Submission.error, error: "User Not Found"));
-  //     }
-  //   } on FirebaseException catch (e){
-  //
-  //   }
-  // }
+//-------------------------------------_UpdateUserData-------------------------------------
+  _onUpdateUserData(UpdateUserData event, Emitter<UserState> emit) async {
+    try {
+      emit(state.copyWith(submission: Submission.loading));
+      if (event.data.isNotEmpty) {
+        // FirestoreService().updateFirebaseData(event.userId, event.dataKey, event.data);
+        FirebaseFirestore.instance
+            .collection('my_users')
+            .doc(event.userId)
+            .update({
+          '${event.dataKey}': event.data,
+        });
+          emit(state.copyWith(submission: Submission.success,));
+         add(LoadUserData(event.userId));
+        }
+        else {
+          emit(state.copyWith(
+              submission: Submission.error, error: "User Not Found"));
+        }
+      }
+     on FirebaseException catch (e) {
+      emit(state.copyWith(submission: Submission.error, error: e.toString()));
+    }
+    // File? _photo;
+    // final ImagePicker _picker = ImagePicker();
+    //
+    // try{
+    //
+    //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    //   emit(state.copyWith(imageUpload: ImageUpload.loading));
+    //   if (pickedFile != null) {
+    //     _photo = File(pickedFile.path);
+    //     final fileName = basename(event.userId);
+    //     final destination = 'profile/$fileName.jpg';
+    //     final ref = firebase_storage.FirebaseStorage.instance
+    //         .ref().child(destination);
+    //       TaskSnapshot uploadTask = await ref.putFile(_photo);
+    //       var imageUrl = await uploadTask.ref.getDownloadURL();
+    //       FirebaseFirestore.instance.collection('my_users').doc(event.userId).update({'image': imageUrl,});
+    //     emit(state.copyWith(imageUpload: ImageUpload.success));
+    //     add(LoadUserData(event.userId));
+    //   }else{
+    //     emit(state.copyWith(imageUpload: ImageUpload.initial));
+    //   }
+    // }
+    // on FirebaseException catch (e) {
+    //   emit(state.copyWith(imageUpload: ImageUpload.error, error: e.toString()));
+    //   ///show snack bar with error
+    // }
+  }
 }
-
-

@@ -17,8 +17,15 @@ class _SignupScreenState extends State<SignupScreen> {
 
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController firstnameController = TextEditingController();
-  TextEditingController lastnameController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+
+  @override
+  void dispose() {
+    passwordController.dispose();
+    emailController.dispose();
+    usernameController.dispose();
+    super.dispose();
+  }
 
   // image
   @override
@@ -71,18 +78,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             AppComponents.customFormField(
-                                fieldController: firstnameController,
-                                hint: "Please enter you firstname",
+                                fieldController: usernameController,
+                                hint: "Please enter you username",
                                 validatorString: (String val) {
                                   /// REGEX for name
-                                },
-                                context: context,
-                                hiddenText: false),
-                            AppComponents.customFormField(
-                                fieldController: lastnameController,
-                                hint: "Please enter you lastname",
-                                validatorString: (String val) {
-                                  ///REGEX for name
                                 },
                                 context: context,
                                 hiddenText: false),
@@ -114,8 +113,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     BlocProvider.of<AuthBloc>(context).add(
                                         SignupRequest(
                                             "",
-                                            firstnameController.text,
-                                            lastnameController.text,
+                                            usernameController.text,
                                             emailController.text,
                                             passwordController.text));
                                   }

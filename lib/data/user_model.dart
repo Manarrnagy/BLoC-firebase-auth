@@ -1,15 +1,13 @@
 class MyUser {
   String? id;
   String? image;
-  String? firstName;
-  String? lastName;
+  String? username;
   String? email;
 
   MyUser({
     this.id,
     this.image,
-    this.firstName,
-    this.lastName,
+    this.username,
     this.email,
   });
   MyUser.empty();
@@ -17,8 +15,7 @@ class MyUser {
   MyUser.fromJson(Map<String, dynamic> json,this.id) {
     // id = json['id'];
     image = json['image'];
-    firstName = json['firstname'];
-    lastName = json['lastname'];
+    username = json['username'];
     email = json['email'];
   }
   //
