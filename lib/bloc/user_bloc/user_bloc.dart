@@ -1,15 +1,10 @@
-import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart';
 import 'package:task_one_think/data/firestore_service.dart';
-
 
 import '../../data/user_model.dart';
 
@@ -23,6 +18,64 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UploadUserImage>(_onImageUpload);
     on<UpdateUserData>(_onUpdateUserData);
   }
+
+  _onLoadUser(LoadUserData event, Emitter<UserState> emit) async {
+    try {
+      emit(state.copyWith(submission: Submission.loading));
+      var userDetails = await FirestoreService().getUsers(event.userId);
+      if (userDetails.data() != null) {
+        MyUser user = MyUser.fromJson(
+            userDetails.data() as Map<String, dynamic>, userDetails.id);
+        emit(state.copyWith(submission: Submission.success, userData: user));
+      } else {
+        emit(state.copyWith(
+            submission: Submission.error, error: "User Not Found"));
+      }
+    } on FirebaseException catch (e) {
+      emit(state.copyWith(submission: Submission.error, error: e.toString()));
+
+      ///show snack bar with error
+    }
+  }
+  //-------------------------------------_onImageUpload-------------------------------------
+  _onImageUpload(UploadUserImage event, Emitter<UserState> emit) async {
+    try {
+      emit(state.copyWith(imageUpload: ImageUpload.loading));
+      if (await FirestoreService().addProfileImage()) {
+        emit(state.copyWith(imageUpload: ImageUpload.success));
+        add(LoadUserData(event.userId));
+      } else {
+        emit(state.copyWith(imageUpload: ImageUpload.initial));
+      }
+    } on FirebaseException catch (e) {
+      emit(
+        state.copyWith(
+          imageUpload: ImageUpload.error,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  //-------------------------------------_UpdateUserData-------------------------------------
+  _onUpdateUserData(UpdateUserData event, Emitter<UserState> emit) async {
+    try {
+      emit(state.copyWith(submission: Submission.loading));
+      if (event.data.isNotEmpty) {
+        FirestoreService().updateFirebaseData(datakey:  event.dataKey, data:event.data);
+        emit(state.copyWith(
+          submission: Submission.success,
+        ));
+        add(LoadUserData(event.userId));
+      } else {
+        emit(state.copyWith(
+            submission: Submission.error, error: "User Not Found"));
+      }
+    } on FirebaseException catch (e) {
+      emit(state.copyWith(submission: Submission.error, error: e.toString()));
+    }
+  }
+
   //
   // _onLoadUser(LoadUserData event, Emitter<UserState> emit) async {
   //   try {
@@ -46,125 +99,60 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   //   }
   // }
 
-  _onLoadUser(LoadUserData event, Emitter<UserState> emit) async {
-    try {
-      emit(state.copyWith(submission: Submission.loading));
-      var userDetails = await FirestoreService().getUsers(event.userId);
-      if (userDetails.data() != null) {
-        MyUser user = MyUser.fromJson(
-            userDetails.data() as Map<String, dynamic>, userDetails.id);
-        emit(state.copyWith(submission: Submission.success, userData: user));
-      } else {
-        emit(state.copyWith(
-            submission: Submission.error, error: "User Not Found"));
-      }
-    } on FirebaseException catch (e) {
-      emit(state.copyWith(submission: Submission.error, error: e.toString()));
+  // }_onImageUpload(UploadUserImage event, Emitter<UserState> emit) async {
+  //   File? _photo;
+  //   final ImagePicker _picker = ImagePicker();
+  //
+  //   try {
+  //     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+  //     emit(state.copyWith(imageUpload: ImageUpload.loading));
+  //     if (pickedFile != null) {
+  //       _photo = File(pickedFile.path);
+  //       final fileName = basename(event.userId);
+  //       final destination = 'profile/$fileName.jpg';
+  //       final ref =
+  //           firebase_storage.FirebaseStorage.instance.ref().child(destination);
+  //       TaskSnapshot uploadTask = await ref.putFile(_photo);
+  //       var imageUrl = await uploadTask.ref.getDownloadURL();
+  //       FirebaseFirestore.instance
+  //           .collection('my_users')
+  //           .doc(event.userId)
+  //           .update({
+  //         'image': imageUrl,
+  //       });
+  //       emit(state.copyWith(imageUpload: ImageUpload.success));
+  //       add(LoadUserData(event.userId));
+  //     } else {
+  //       emit(state.copyWith(imageUpload: ImageUpload.initial));
+  //     }
+  //   } on FirebaseException catch (e) {
+  //     emit(state.copyWith(imageUpload: ImageUpload.error, error: e.toString()));
+  //
+  //     ///show snack bar with error
+  //   }
+  // }
 
-      ///show snack bar with error
-    }
-  }
-
-  _onImageUpload(UploadUserImage event, Emitter<UserState> emit) async {
-    // try{
-    //   emit(state.copyWith(imageUpload: ImageUpload.loading));
-    //   final ref = firebase_storage.FirebaseStorage.instance.ref().child(event.userId);
-    //
-    //   final imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    //   // imageFile?.name.split(".").last;
-    //   final uploadTask = ref.putFile(imageFile );
-    //   final snapshot = await uploadTask.whenComplete(() => null);
-    //   var imageUrl = await snapshot.ref.getDownloadURL();
-    //   FirebaseFirestore.instance.collection('my_users').doc(event.userId).update({'image': imageUrl,});
-    //
-    //   emit(state.copyWith(imageUpload: ImageUpload.success));
-    //   add(LoadUserData(event.userId));
-    // }on FirebaseException catch (e) {
-    //   emit(state.copyWith(imageUpload: ImageUpload.error, error: e.toString()));
-    //   ///show snack bar with error
-    // }
-    // firebase_storage.FirebaseStorage storage =
-    //     firebase_storage.FirebaseStorage.instance;
-
-    File? _photo;
-    final ImagePicker _picker = ImagePicker();
-
-    try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-      emit(state.copyWith(imageUpload: ImageUpload.loading));
-      if (pickedFile != null) {
-        _photo = File(pickedFile.path);
-        final fileName = basename(event.userId);
-        final destination = 'profile/$fileName.jpg';
-        final ref =
-            firebase_storage.FirebaseStorage.instance.ref().child(destination);
-        TaskSnapshot uploadTask = await ref.putFile(_photo);
-        var imageUrl = await uploadTask.ref.getDownloadURL();
-        FirebaseFirestore.instance
-            .collection('my_users')
-            .doc(event.userId)
-            .update({
-          'image': imageUrl,
-        });
-        emit(state.copyWith(imageUpload: ImageUpload.success));
-        add(LoadUserData(event.userId));
-      } else {
-        emit(state.copyWith(imageUpload: ImageUpload.initial));
-      }
-    } on FirebaseException catch (e) {
-      emit(state.copyWith(imageUpload: ImageUpload.error, error: e.toString()));
-
-      ///show snack bar with error
-    }
-  }
-//-------------------------------------_UpdateUserData-------------------------------------
-  _onUpdateUserData(UpdateUserData event, Emitter<UserState> emit) async {
-    try {
-      emit(state.copyWith(submission: Submission.loading));
-      if (event.data.isNotEmpty) {
-        // FirestoreService().updateFirebaseData(event.userId, event.dataKey, event.data);
-        FirebaseFirestore.instance
-            .collection('my_users')
-            .doc(event.userId)
-            .update({
-          '${event.dataKey}': event.data,
-        });
-          emit(state.copyWith(submission: Submission.success,));
-         add(LoadUserData(event.userId));
-        }
-        else {
-          emit(state.copyWith(
-              submission: Submission.error, error: "User Not Found"));
-        }
-      }
-     on FirebaseException catch (e) {
-      emit(state.copyWith(submission: Submission.error, error: e.toString()));
-    }
-    // File? _photo;
-    // final ImagePicker _picker = ImagePicker();
-    //
-    // try{
-    //
-    //   final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    //   emit(state.copyWith(imageUpload: ImageUpload.loading));
-    //   if (pickedFile != null) {
-    //     _photo = File(pickedFile.path);
-    //     final fileName = basename(event.userId);
-    //     final destination = 'profile/$fileName.jpg';
-    //     final ref = firebase_storage.FirebaseStorage.instance
-    //         .ref().child(destination);
-    //       TaskSnapshot uploadTask = await ref.putFile(_photo);
-    //       var imageUrl = await uploadTask.ref.getDownloadURL();
-    //       FirebaseFirestore.instance.collection('my_users').doc(event.userId).update({'image': imageUrl,});
-    //     emit(state.copyWith(imageUpload: ImageUpload.success));
-    //     add(LoadUserData(event.userId));
-    //   }else{
-    //     emit(state.copyWith(imageUpload: ImageUpload.initial));
-    //   }
-    // }
-    // on FirebaseException catch (e) {
-    //   emit(state.copyWith(imageUpload: ImageUpload.error, error: e.toString()));
-    //   ///show snack bar with error
-    // }
-  }
+  // _onUpdateUserData(UpdateUserData event, Emitter<UserState> emit) async {
+  //   try {
+  //     emit(state.copyWith(submission: Submission.loading));
+  //     if (event.data.isNotEmpty) {
+  //       // FirestoreService().updateFirebaseData(event.userId, event.dataKey, event.data);
+  //       FirebaseFirestore.instance
+  //           .collection('my_users')
+  //           .doc(event.userId)
+  //           .update({
+  //         '${event.dataKey}': event.data,
+  //       });
+  //       emit(state.copyWith(
+  //         submission: Submission.success,
+  //       ));
+  //       add(LoadUserData(event.userId));
+  //     } else {
+  //       emit(state.copyWith(
+  //           submission: Submission.error, error: "User Not Found"));
+  //     }
+  //   } on FirebaseException catch (e) {
+  //     emit(state.copyWith(submission: Submission.error, error: e.toString()));
+  //   }
+  // }
 }

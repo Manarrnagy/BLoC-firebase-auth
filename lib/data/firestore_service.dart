@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart';
 import 'package:task_one_think/data/user_model.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:task_one_think/main.dart';
 
 class FirestoreService {
   final CollectionReference _usersCollection =
@@ -28,20 +31,6 @@ class FirestoreService {
     DocumentSnapshot userDetails = await _usersCollection.doc(userId).get();
     return userDetails;
   }
-  // }Future<void> addUser(MyUser user) {
-  //   return _usersCollection.add({
-  //     'firstname': user.firstname,
-  //     'lastname': user.lastname,
-  //     'email': user.email,
-  //     'image': user.image,
-  //   });
-  // }
-  //
-
-  // Future<MyUser> getUserData(String userId){
-  //
-  // }
-
   Future<void> addUserWithId(MyUser user) {
 
     return _usersCollection
@@ -53,18 +42,27 @@ class FirestoreService {
         .catchError((error) => print('Add failed: $error'));
   }
 
-  // Future<String> addProfileImage (String imageName) async{
-  //   final ref = firebase_storage.FirebaseStorage.instance.ref().child(imageName);
-  //   final imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-  //
-  //   final uploadTask = ref.putFile(imageFile as File);
-  //   final snapshot = await uploadTask.whenComplete(() => null);
-  //   imageUrl = await snapshot.ref.getDownloadURL();
-  // }
-  //
-  // Future<void> deleteTodo(String userId) {
-  //   return _usersCollection.doc(userId).delete();
-  // }
+  Future<bool> addProfileImage () async{
+    File? _photo;
+    final ImagePicker _picker = ImagePicker();
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if(pickedFile!=null){
+      _photo = File(pickedFile.path);
+      final fileName = basename(firebaseUserID);
+      final destination = 'profile/$fileName.jpg';
+      final ref =
+      firebase_storage.FirebaseStorage.instance.ref().child(destination);
+      TaskSnapshot uploadTask = await ref.putFile(_photo);
+      var imageUrl = await uploadTask.ref.getDownloadURL();
+      updateFirebaseData(datakey: "image", data: imageUrl);
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> deleteTodo(String userId) {
+    return _usersCollection.doc(userId).delete();
+  }
   Future<void> uploadUserImage(MyUser user, String ImageUrl) {
     return _usersCollection.doc(user.id).update({
       'image': ImageUrl,
@@ -72,8 +70,8 @@ class FirestoreService {
   }
 
 
-  Future<void> updateFirebaseData(String userID,String datakey, String data) {
-    return _usersCollection.doc(userID).update({
+  Future<void> updateFirebaseData({required String datakey, required String data}) {
+    return _usersCollection.doc(firebaseUserID).update({
       datakey: data,
     });
   }
