@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task_one_think/bloc/auth_bloc/auth_bloc.dart';
 import '../utils/app_components.dart';
 
-
+/// add loading
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -34,10 +34,10 @@ class _SignupScreenState extends State<SignupScreen> {
       create: (context) => AuthBloc(),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is SignupSuccess) {
+          if (state.authorization == Authorization.success) {
             Navigator.pushNamedAndRemoveUntil(
                 context, "home", (Route route) => false);
-          } else if (state is SignupError) {
+          } else if (state.authorization == Authorization.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.error.toString()),

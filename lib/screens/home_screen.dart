@@ -17,10 +17,10 @@ class _HomeScreenState extends State<HomeScreen> {
       create: (context) => AuthBloc(),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is LogoutSuccess) {
+          if (state.authorization == Authorization.success) {
             Navigator.pushReplacementNamed(context, "login");
           }
-          if (state is LogoutError) {
+          if (state.authorization == Authorization.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if (state is LogoutLoading) CircularProgressIndicator(),
+                    if (state.authorization == Authorization.loading) CircularProgressIndicator(),
 
                     ListTile(
                       minVerticalPadding: 50,

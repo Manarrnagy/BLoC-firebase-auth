@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:task_one_think/bloc/auth_bloc/auth_bloc.dart';
 import 'package:task_one_think/utils/app_colors.dart';
 import 'package:task_one_think/utils/app_components.dart';
@@ -17,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+
   // bool isLoading = false;
 
   @override
@@ -32,11 +33,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocProvider(
       create: (context) => AuthBloc(),
       child: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) async{
-          if (state is LoginSuccess) {
-
-            Navigator.pushNamedAndRemoveUntil(context, "home",(Route route)=>false);
-          } else if (state is LoginError) {
+        listener: (context, state) async {
+          if (state.authorization == Authorization.success) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, "home", (Route route) => false);
+          } else if (state.authorization == Authorization.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.error.toString()),
@@ -56,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
+
               ///--------------------------Widgets------------------------------
               child: Scaffold(
                 backgroundColor: Colors.transparent,
@@ -65,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                        height: MediaQuery.of(context).size.height*0.15,
+                        height: MediaQuery.of(context).size.height * 0.15,
                       ),
                       Text(
                         "Hello!",
@@ -113,8 +115,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               AppComponents.solidButton(
                                   fun: () {
                                     if (formKey.currentState!.validate()) {
-                                      BlocProvider.of<AuthBloc>(context)
-                                          .add(LoginRequest(emailController.text,passwordController.text));
+                                      BlocProvider.of<AuthBloc>(context).add(
+                                          LoginRequest(emailController.text,
+                                              passwordController.text));
                                     }
                                   },
                                   widget: const Text(
@@ -124,11 +127,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                   context: context),
                               SizedBox(
-                                height:MediaQuery.of(context).size.height*0.05 ,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05,
                               ),
                               AppComponents.solidButton(
                                   fun: () {
-                                   Navigator.of(context).pushReplacementNamed("signup");
+                                    Navigator.of(context)
+                                        .pushReplacementNamed("signup");
                                   },
                                   widget: const Text(
                                     "Don't have an account? SIGN UP",
@@ -136,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         color: Colors.white, fontSize: 20),
                                   ),
                                   color: AppColors.yellow,
-                                  heightPercent:0.05 ,
+                                  heightPercent: 0.05,
                                   widthPercent: 0.8,
                                   context: context),
                             ],

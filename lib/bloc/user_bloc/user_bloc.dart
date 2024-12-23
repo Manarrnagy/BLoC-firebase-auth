@@ -75,7 +75,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(state.copyWith(submission: Submission.error, error: e.toString()));
     }
   }
-
   //
   // _onLoadUser(LoadUserData event, Emitter<UserState> emit) async {
   //   try {
