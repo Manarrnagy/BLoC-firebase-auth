@@ -1,7 +1,8 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
-import "../bloc/auth_bloc/auth_bloc.dart";
+import "package:task_one_think/utils/app_components.dart";
+import "../../bloc/auth_bloc/auth_bloc.dart";
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,20 +39,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    if (state.authorization == Authorization.loading) CircularProgressIndicator(),
-
-                    ListTile(
-                      minVerticalPadding: 50,
-                      tileColor: Colors.blue,
-                      leading: Icon(
+                    if (state.authorization == Authorization.loading)
+                      CircularProgressIndicator(),
+                    AppComponents.drawerListTile(
+                      context: context,
+                      icon: Icon(
                         CupertinoIcons.profile_circled,
                         size: 30,
                       ),
-                      title: Text(
+                      text: Text(
                         "My Profile",
                         style: TextStyle(fontSize: 30),
                       ),
-                      onTap: () {
+                      fun: () {
                         Navigator.pushNamed(context, "profile");
                       },
                     ),

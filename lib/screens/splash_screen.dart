@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart';
 import 'package:lottie/lottie.dart';
-import 'package:task_one_think/screens/home_screen.dart';
+import 'package:task_one_think/screens/home/home_screen.dart';
 import 'package:task_one_think/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {

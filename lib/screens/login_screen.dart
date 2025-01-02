@@ -14,7 +14,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   TextEditingController passwordController = TextEditingController();
   TextEditingController emailController = TextEditingController();
 
@@ -35,8 +34,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) async {
           if (state.authorization == Authorization.success) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, "home", (Route route) => false);
+            // Navigator.pushNamedAndRemoveUntil(
+            //     context, "home", (Route route) => false);
+            Navigator.pushReplacementNamed(context, "home");
           } else if (state.authorization == Authorization.error) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -120,7 +120,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                               passwordController.text));
                                     }
                                   },
-                                  widget: const Text(
+                                  widget: state.authorization ==
+                                      Authorization.loading
+                                      ? AppComponents.loadingIndicator(
+                                      context: context)
+                                      :  const Text(
                                     "Login",
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 20),
@@ -135,11 +139,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Navigator.of(context)
                                         .pushReplacementNamed("signup");
                                   },
-                                  widget: const Text(
-                                    "Don't have an account? SIGN UP",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
+                                  widget:const Text(
+                                          "Don't have an account? SIGN UP",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20),
+                                        ),
                                   color: AppColors.yellow,
                                   heightPercent: 0.05,
                                   widthPercent: 0.8,

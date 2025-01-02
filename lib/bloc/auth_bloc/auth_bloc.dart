@@ -11,26 +11,37 @@ import '../../data/user_model.dart';
 part 'auth_event.dart';
 
 part 'auth_state.dart';
-FirestoreService firestoreService = FirestoreService();
+
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(const AuthState()) {
     on<LoginRequest>(_onLoginRequest);
     on<LogoutRequest>(_onLogoutRequest);
     on<SignupRequest>(_onSignupRequest);
-
   }
 
   //-----------------------------------------LOGIN-----------------------------------------
   _onLoginRequest(LoginRequest event, Emitter<AuthState> emit) async {
     try {
       emit(state.copyWith(authorization: Authorization.loading));
-        if ( await firestoreService.login(event.email, event.password)) {
-          emit(state.copyWith(
-              authorization: Authorization.success, userID:firebaseUserID));
-        }
+      // if ( await firestoreService.login(event.email, event.password)) {
+      //   print("${state.authorization} ##33333333333333333333333####");
+      //   emit(state.copyWith(
+      //       authorization: Authorization.success, userID:firebaseUserID));
+      //   print("${state.authorization} #######################");
+      // }
+      await firestoreService.login(event.email, event.password).then((value) {
+        print("${state.authorization} ##33333333333333333333333####");
+        emit(state.copyWith(
+            authorization: Authorization.success, userID: firebaseUserID));
+        print("${state.authorization} #######################");
+      });
     } on FirebaseException catch (e) {
       emit(state.copyWith(
           authorization: Authorization.error, error: e.toString()));
+    } catch (e) {
+      emit(state.copyWith(
+          authorization: Authorization.error,
+          error: "-*-Exception-*-: ${e.toString()}"));
     }
   }
 
@@ -38,12 +49,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _onLogoutRequest(LogoutRequest event, Emitter<AuthState> emit) async {
     try {
       emit(state.copyWith(authorization: Authorization.loading));
-      if(await firestoreService.signout()){
+
+      await firestoreService.signout().then((value) {
         emit(state.copyWith(authorization: Authorization.success, userID: ""));
-      }
+      });
     } on FirebaseException catch (e) {
       emit(state.copyWith(
           authorization: Authorization.error, error: e.toString()));
+    } catch (e) {
+      emit(state.copyWith(
+          authorization: Authorization.error,
+          error: "-*-Exception-*-: ${e.toString()}"));
     }
   }
 
@@ -51,15 +67,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   _onSignupRequest(SignupRequest event, Emitter<AuthState> emit) async {
     try {
       emit(state.copyWith(authorization: Authorization.loading));
-      if(await firestoreService.createUser(event.username, event.email, event.password)){
-
+      if (await firestoreService.createUser(
+          event.username, event.email, event.password)) {
         emit(state.copyWith(
-            authorization: Authorization.success,
-            userID: firebaseUserID));
+            authorization: Authorization.success, userID: firebaseUserID));
       }
     } on FirebaseException catch (e) {
       emit(state.copyWith(
           authorization: Authorization.error, error: e.toString()));
+    } catch (e) {
+      emit(state.copyWith(
+          authorization: Authorization.error,
+          error: "-*-Exception-*-: ${e.toString()}"));
     }
   }
 }

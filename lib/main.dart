@@ -3,7 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:task_one_think/screens/home_screen.dart';
+import 'package:task_one_think/screens/home/home_screen.dart';
 import 'package:task_one_think/screens/login_screen.dart';
 import 'package:task_one_think/screens/profile_screen.dart';
 import 'package:task_one_think/screens/sign_up_screen.dart';
@@ -11,11 +11,13 @@ import 'package:task_one_think/screens/splash_screen.dart';
 import 'package:task_one_think/utils/app_constants.dart';
 
 import 'bloc/user_bloc/user_bloc.dart';
+import 'data/firestore_service.dart';
 
 var firebaseUserID ="";
+late FirestoreService firestoreService;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp().then((value)async{ firestoreService = await FirestoreService.getInstance();});
   SharedPreferences prefs =await SharedPreferences.getInstance();
   firebaseUserID=prefs.getString("userID")??"";
   runApp(const MyApp());
