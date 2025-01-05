@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:task_one_think/data/firestore_service.dart';
+import 'package:task_one_think/main.dart';
 
 import '../../data/user_model.dart';
 
@@ -22,26 +23,26 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   _onLoadUser(LoadUserData event, Emitter<UserState> emit) async {
     try {
       emit(state.copyWith(submission: Submission.loading));
-      var userDetails = await FirestoreService().getUsers(event.userId);
-      if (userDetails.data() != null) {
-        MyUser user = MyUser.fromJson(
-            userDetails.data() as Map<String, dynamic>, userDetails.id);
-        emit(state.copyWith(submission: Submission.success, userData: user));
+      var userDetails = await firestoreService.getUsers(event.userId);
+      if (userDetails != MyUser.empty()) {
+        emit(state.copyWith(submission: Submission.success, userData: userDetails));
       } else {
         emit(state.copyWith(
             submission: Submission.error, error: "User Not Found"));
       }
     } on FirebaseException catch (e) {
-      emit(state.copyWith(submission: Submission.error, error: e.toString()));
+      emit(state.copyWith(submission: Submission.error, error: "-*-FirebaseException-*-: ${e.toString()}"));
 
       ///show snack bar with error
+    } catch (e) {
+      emit(state.copyWith(submission: Submission.error, error: "-*-Exception-*-: ${e.toString()}"));
     }
   }
   //-------------------------------------_onImageUpload-------------------------------------
   _onImageUpload(UploadUserImage event, Emitter<UserState> emit) async {
     try {
       emit(state.copyWith(imageUpload: ImageUpload.loading));
-      if (await FirestoreService().addProfileImage()) {
+      if (await firestoreService.addProfileImage()) {
         emit(state.copyWith(imageUpload: ImageUpload.success));
         add(LoadUserData(event.userId));
       } else {
@@ -54,6 +55,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           error: e.toString(),
         ),
       );
+    } catch (e) {
+      emit(state.copyWith(imageUpload: ImageUpload.error, error: "-*-Exception-*-: ${e.toString()}"));
     }
   }
 
@@ -62,17 +65,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
       emit(state.copyWith(submission: Submission.loading));
       if (event.data.isNotEmpty) {
-        FirestoreService().updateFirebaseData(datakey:  event.dataKey, data:event.data);
+        await firestoreService.updateFirebaseData(datakey:  event.dataKey, data:event.data);
         emit(state.copyWith(
           submission: Submission.success,
         ));
-        add(LoadUserData(event.userId));
+        // add(LoadUserData(event.userId));
       } else {
         emit(state.copyWith(
             submission: Submission.error, error: "User Not Found"));
       }
     } on FirebaseException catch (e) {
       emit(state.copyWith(submission: Submission.error, error: e.toString()));
+    } catch (e) {
+      emit(state.copyWith(submission: Submission.error, error: "-*-Exception-*-: ${e.toString()}"));
     }
   }
   //
